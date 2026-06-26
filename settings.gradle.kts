@@ -20,6 +20,16 @@ develocity {
         uploadInBackground.set(false)
     }
 }
+
+buildCache {
+    remote<HttpBuildCache> {
+        url = uri("http://136.66.48.167/cache")
+        isPush = true
+        isAllowInsecureProtocol = true
+    }
+}
+
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
