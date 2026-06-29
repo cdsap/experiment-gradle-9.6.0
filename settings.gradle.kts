@@ -24,7 +24,7 @@ develocity {
 buildCache {
     remote(develocity.buildCache) {
         isPush = true
-        isAllowInsecureProtocol = true
+       
     }
 }
 
