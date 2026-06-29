@@ -12,7 +12,7 @@ plugins {
     id("com.gradle.common-custom-user-data-gradle-plugin") version "2.2"
     id("com.fueledbycaffeine.spotlight") version "1.4.1"
 }
-rootProject.name = "androidRectangle100modules"
+rootProject.name = "DriverApp"
 develocity {
     server = "https://ge.solutions-team.gradle.com/"
     allowUntrustedServer = true
