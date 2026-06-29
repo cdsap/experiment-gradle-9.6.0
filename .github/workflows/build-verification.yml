@@ -1,0 +1,54 @@
+name: Build Verification
+
+permissions:
+  contents: read
+
+on: [ push, pull_request, workflow_dispatch ]
+
+env:
+  # Develocity Artifact Cache CLI — delivers the Universal Cache (Artifact Cache + Setup Cache)
+  ARTIFACT_CACHE_CLI_VERSION: 1.2.0
+  ARTIFACT_CACHE_CLI_FILENAME: develocity-artifact-cache-cli
+
+  ## Develocity
+  DV_SERVER: https://ge.solutions-team.gradle.com
+  DEVELOCITY_ACCESS_KEY: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
+
+  ## Restore/store the Gradle User Home (Artifact Cache + Setup Cache content live here)
+  ARTIFACT_CACHE_OPTS: "--gradle-home=/home/runner/.gradle"
+  ## Set to "false" to skip the store phase (e.g. on forks / PRs without secrets)
+  ARTIFACT_CACHE_STORE: "true"
+
+jobs:
+  build:
+    name: Build with Universal Cache
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+        with:
+          # The Universal Cache fully manages the Gradle User Home — disable the
+          # setup-gradle action's own caching to avoid conflicts.
+          cache-disabled: true
+          develocity-access-key: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
+
+      - name: Setup and restore Universal Cache
+        uses: ./.github/actions/setup-and-restore-universal-cache
+
+      - name: Build with Gradle
+        run: ./gradlew assembleDebug
+
+      - name: Store Universal Cache
+        uses: ./.github/actions/store-universal-cache
+        if: env.ARTIFACT_CACHE_STORE == 'true'
+        with:
+          artifact-name: universal-cache-${{ github.job }}.log
