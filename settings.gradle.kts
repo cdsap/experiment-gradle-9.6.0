@@ -22,8 +22,7 @@ develocity {
 }
 
 buildCache {
-    remote<HttpBuildCache> {
-        url = uri("http://34.100.161.233/cache")
+    remote(develocity.buildCache) {
         isPush = true
         isAllowInsecureProtocol = true
     }
